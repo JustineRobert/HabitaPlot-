@@ -51,7 +51,27 @@ Welcome to the HabitaPlot™ documentation! This folder contains all technical d
    - Checkout and payment journeys
    - Admin and listing creation layouts
 
-7. **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+7. **[ENGINEERING_TICKETS.md](./ENGINEERING_TICKETS.md)**
+   - Engineering ticket breakdown
+   - Acceptance criteria for launch features
+   - Task definitions for tech, product, and legal work
+
+8. **[PITCH_DECK.md](./PITCH_DECK.md)**
+   - Slide-by-slide investor narrative
+   - Problem, solution, traction, and roadmap
+   - Messaging for Uganda launch
+
+9. **[TERMS_PRIVACY_COMPLIANCE.md](./TERMS_PRIVACY_COMPLIANCE.md)**
+   - Terms of Service draft
+   - Privacy Policy draft
+   - Compliance and payment notes
+
+10. **[LAUNCH_ROADMAP_90_DAYS.md](./LAUNCH_ROADMAP_90_DAYS.md)**
+   - 90-day launch plan
+   - Phase-based milestones
+   - Success metrics and risk mitigation
+
+11. **[DEPLOYMENT.md](./DEPLOYMENT.md)**
    - Development environment setup
    - AWS infrastructure configuration
    - Docker deployment
