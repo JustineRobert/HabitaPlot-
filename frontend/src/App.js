@@ -10,6 +10,7 @@ import { Toaster } from 'react-hot-toast';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import ListingDetailPage from './pages/ListingDetailPage';
+import PaymentPage from './pages/PaymentPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -87,6 +88,15 @@ function App() {
                   <DashboardPage user={currentUser} />
                 </ProtectedRoute>
               } 
+            />
+
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <PaymentPage />
+                </ProtectedRoute>
+              }
             />
 
             {/* 404 Route */}

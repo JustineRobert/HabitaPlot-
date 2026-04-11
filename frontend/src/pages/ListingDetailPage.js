@@ -4,10 +4,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { listingService } from '../services/listingService';
+import { authService } from '../services/authService';
 import toast from 'react-hot-toast';
-import { FiHome, FiMapPin, FiDollarSign, FiPhone, FiMail } from 'react-icons/fi';
+import { FiHome, FiMapPin, FiDollarSign, FiPhone, FiMail, FiArrowRight } from 'react-icons/fi';
 
 const ListingDetailPage = () => {
   const { id } = useParams();
@@ -131,8 +132,21 @@ const ListingDetailPage = () => {
               </>
             )}
 
-            <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 mt-4">
-              Send Inquiry
+            <button
+              onClick={() => {
+                if (!authService.isAuthenticated()) {
+                  toast.error('Please log in to make a payment');
+                  return;
+                }
+                navigate(
+                  `/payment?amount=${listing.price}&description=${encodeURIComponent(
+                    `Payment for ${listing.title}`
+                  )}&externalId=listing-${listing.id}`
+                );
+              }}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 mt-4 flex items-center justify-center gap-2"
+            >
+              <FiArrowRight /> Pay with Mobile Money
             </button>
 
             <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 mt-2">
