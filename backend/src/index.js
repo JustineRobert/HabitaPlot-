@@ -133,7 +133,9 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
 
 // Graceful Shutdown
 process.on('SIGTERM', () => {

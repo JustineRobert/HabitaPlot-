@@ -33,6 +33,9 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
             <Link to="/search" className="text-gray-700 hover:text-blue-600 flex items-center gap-2">
               <FiSearch /> Search
             </Link>
+            <Link to="/contact" className="text-gray-700 hover:text-blue-600">
+              Contact
+            </Link>
 
             {isAuthenticated ? (
               <>
@@ -121,6 +124,13 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Sign Up
+                </Link>
+                <Link
+                  to="/contact"
+                  className="block px-4 py-2 text-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact
                 </Link>
               </>
             )}
