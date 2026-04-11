@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: habitaplot-postgres
+    environment:
+      POSTGRES_DB: habitaplot
+      POSTGRES_USER: habitaplot_user
+      POSTGRES_PASSWORD: secure_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U habitaplot_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - habitaplot-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: habitaplot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - habitaplot-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: habitaplot-backend
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: habitaplot
+      DB_USER: habitaplot_user
+      DB_PASSWORD: secure_password_change_me
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev_jwt_secret_key_change_in_production
+      CORS_ORIGIN: http://localhost:3000,http://localhost:3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/migrations:/app/migrations
+    networks:
+      - habitaplot-network
+    restart: unless-stopped
+
+  # Frontend App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: habitaplot-frontend
+    ports:
+      - "3000:80"
+    environment:
+      REACT_APP_API_URL: http://localhost:5000/api/v1
+      REACT_APP_ENV: development
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    networks:
+      - habitaplot-network
+    restart: unless-stopped
+
+  # Admin Tools (Optional - pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: habitaplot-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@habitaplot.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - habitaplot-network
+    restart: unless-stopped
+
+  # Redis Commander (Optional - Redis UI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: habitaplot-redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - habitaplot-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  habitaplot-network:
+    driver: bridge
