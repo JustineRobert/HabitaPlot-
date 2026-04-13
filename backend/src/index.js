@@ -3,17 +3,17 @@
  * Main entry point for Express application
  */
 
-require('dotenv').config();
+require('./config/validateEnv');
 const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
 const morgan = require('morgan');
-const path = require('path');
+const { sequelize, testConnection, syncDatabase } = require('./config/database');
+const enableSecurity = require('./middleware/security');
+const logger = require('./config/logger');
 
 // Import database and models
-const { sequelize, testConnection, syncDatabase } = require('./config/database');
 const User = require('./models/User');
 const Listing = require('./models/Listing');
+const Transaction = require('./models/Transaction');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -24,13 +24,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const app = express();
 
 // Security Middleware
-app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+enableSecurity(app);
 
 // Body Parser Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -80,12 +74,12 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   const status = err.status || err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  
-  console.error(`[ERROR] ${status}: ${message}`, err);
-  
+
+  logger.error('[ERROR] %s %s %s', req.method, req.originalUrl, message, { stack: err.stack });
+
   res.status(status).json({
     error: err.name || 'Error',
-    message: message,
+    message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
@@ -103,6 +97,12 @@ const startServer = async () => {
     User.hasMany(Listing, { foreignKey: 'userId', as: 'listings' });
     Listing.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
 
+    User.hasMany(Transaction, { foreignKey: 'userId', as: 'transactions' });
+    Transaction.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+    Listing.hasMany(Transaction, { foreignKey: 'listingId', as: 'transactions' });
+    Transaction.belongsTo(Listing, { foreignKey: 'listingId', as: 'listing' });
+
     // Test database connection
     await testConnection();
 
@@ -113,22 +113,13 @@ const startServer = async () => {
 
     // Start listening
     app.listen(PORT, () => {
-      console.log(`
-╔════════════════════════════════════════════════╗
-║        HabitaPlot Backend Server               ║
-║              Started Successfully              ║
-╚════════════════════════════════════════════════╝
-  
-  Server:     http://localhost:${PORT}
-  Environment: ${NODE_ENV}
-  API Base:   http://localhost:${PORT}/api/v1
-  Database:   Connected
-  
-  Waiting for requests...
-  `);
+      logger.info('HabitaPlot Backend Server started successfully');
+      logger.info('Environment: %s', NODE_ENV);
+      logger.info('Server: http://localhost:%s', PORT);
+      logger.info('API Base: http://localhost:%s/api/v1', PORT);
     });
   } catch (error) {
-    console.error('Failed to start server:', error.message);
+    logger.error('Failed to start server: %s', error.message, { stack: error.stack });
     process.exit(1);
   }
 };
@@ -139,7 +130,7 @@ if (require.main === module) {
 
 // Graceful Shutdown
 process.on('SIGTERM', () => {
-  console.log('\nSIGTERM signal received: closing HTTP server');
+  logger.info('SIGTERM signal received: closing HTTP server');
   process.exit(0);
 });
 

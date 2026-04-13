@@ -22,5 +22,17 @@ export const paymentService = {
       transactionId
     });
     return response.data.data;
+  },
+
+  getTransactions: async ({ page = 1, limit = 20 } = {}) => {
+    const response = await apiClient.get('/payments/transactions', {
+      params: { page, limit }
+    });
+    return response.data;
+  },
+
+  getTransaction: async (transactionId) => {
+    const response = await apiClient.get(`/payments/transactions/${transactionId}`);
+    return response.data.data;
   }
 };

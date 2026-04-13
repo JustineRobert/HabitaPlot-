@@ -5,6 +5,16 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+const ensureSecret = (secretName) => {
+  const secret = process.env[secretName];
+
+  if (!secret) {
+    throw new Error(`${secretName} is required and must be configured`);
+  }
+
+  return secret;
+};
+
 /**
  * Generate JWT Token
  * @param {Object} payload - Token payload
@@ -12,7 +22,7 @@ const bcrypt = require('bcryptjs');
  * @returns {string} JWT token
  */
 const generateToken = (payload, expiresIn = process.env.JWT_EXPIRE || '24h') => {
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+  return jwt.sign(payload, ensureSecret('JWT_SECRET'), { expiresIn });
 };
 
 /**
@@ -22,7 +32,7 @@ const generateToken = (payload, expiresIn = process.env.JWT_EXPIRE || '24h') => 
  */
 const verifyToken = (token) => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
+    return jwt.verify(token, ensureSecret('JWT_SECRET'));
   } catch (error) {
     return null;
   }
@@ -54,7 +64,7 @@ const comparePassword = async (password, hash) => {
  * @returns {string} Refresh token
  */
 const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+  return jwt.sign(payload, ensureSecret('JWT_REFRESH_SECRET'), {
     expiresIn: process.env.JWT_REFRESH_EXPIRE || '7d'
   });
 };
@@ -66,7 +76,7 @@ const generateRefreshToken = (payload) => {
  */
 const verifyRefreshToken = (token) => {
   try {
-    return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    return jwt.verify(token, ensureSecret('JWT_REFRESH_SECRET'));
   } catch (error) {
     return null;
   }

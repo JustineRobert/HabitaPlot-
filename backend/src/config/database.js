@@ -3,7 +3,7 @@
  * Sequelize ORM configuration for PostgreSQL
  */
 
-require('dotenv').config();
+require('./validateEnv');
 const { Sequelize } = require('sequelize');
 
 // Database Connection Configuration
@@ -21,12 +21,14 @@ const sequelize = new Sequelize({
     acquire: 30000,
     idle: 10000
   },
-  dialectOptions: {
-    ssl: process.env.NODE_ENV === 'production' ? {
-      require: true,
-      rejectUnauthorized: false
-    } : false
-  }
+  dialectOptions: process.env.DB_SSL
+    ? {
+        ssl: {
+          require: true,
+          rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false'
+        }
+      }
+    : {}
 });
 
 /**

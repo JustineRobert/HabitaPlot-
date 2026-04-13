@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { paymentService } from '../services/paymentService';
 import toast from 'react-hot-toast';
-import { FiArrowLeft, FiCheckCircle, FiClock, FiCreditCard } from 'react-icons/fi';
+import { FiArrowLeft, FiCheckCircle, FiClock } from 'react-icons/fi';
 
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +15,7 @@ const PaymentPage = () => {
     searchParams.get('description') || 'Uganda mobile money payment'
   );
   const [externalId, setExternalId] = useState(searchParams.get('externalId') || '');
+  const [listingId] = useState(searchParams.get('listingId') || '');
   const [paymentResult, setPaymentResult] = useState(null);
   const [verificationResult, setVerificationResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -52,7 +53,8 @@ const PaymentPage = () => {
         currency: 'UGX',
         phoneNumber,
         description,
-        externalId: externalId || undefined
+        externalId: externalId || undefined,
+        listingId: listingId || undefined
       });
       setPaymentResult(result);
       toast.success('Payment request created. Verify when complete.');
@@ -83,6 +85,14 @@ const PaymentPage = () => {
       toast.error(error.response?.data?.message || error.message || 'Payment verification failed');
     } finally {
       setVerifying(false);
+    }
+  };
+
+  const handlePrintReceipt = () => {
+    if (paymentResult?.id) {
+      navigate(`/transactions/${paymentResult.id}`);
+    } else {
+      toast.error('Transaction record not found yet');
     }
   };
 
@@ -193,7 +203,16 @@ const PaymentPage = () => {
             <p className="text-gray-700 mb-2">Provider: {paymentResult.providerName}</p>
             <p className="text-gray-700 mb-2">Transaction ID: {paymentResult.transactionId}</p>
             <p className="text-gray-700 mb-2">Status: {paymentResult.status}</p>
+            <p className="text-gray-700 mb-2">Receipt: {paymentResult.receiptNumber}</p>
             <p className="text-gray-700">Amount: UGX {Number(paymentResult.amount).toLocaleString()}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                onClick={handlePrintReceipt}
+                className="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                View Receipt
+              </button>
+            </div>
           </div>
         )}
 

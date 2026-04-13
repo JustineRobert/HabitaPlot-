@@ -42,6 +42,9 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                 <Link to="/dashboard" className="text-gray-700 hover:text-blue-600">
                   Dashboard
                 </Link>
+                <Link to="/transactions" className="text-gray-700 hover:text-blue-600">
+                  Transactions
+                </Link>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-700">{user?.name}</span>
                   <button
@@ -100,6 +103,13 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
+                </Link>
+                <Link
+                  to="/transactions"
+                  className="block text-gray-700 hover:text-blue-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Transactions
                 </Link>
                 <div className="text-sm text-gray-700 py-2">{user?.name}</div>
                 <button

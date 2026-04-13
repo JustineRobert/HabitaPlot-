@@ -1,0 +1,21 @@
+{
+  "name": "habitaplot-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@9.0.0",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install": "npm install",
+    "bootstrap": "npm install",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write '**/*.{js,jsx,json,css,md}'"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0"
+  }
+}

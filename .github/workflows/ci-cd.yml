@@ -58,7 +58,6 @@ jobs:
       - name: Lint backend
         working-directory: backend
         run: npm run lint
-        continue-on-error: true
       
       - name: Run backend tests
         working-directory: backend
@@ -71,7 +70,6 @@ jobs:
           DB_NAME: habitaplot_test
           REDIS_URL: redis://localhost:6379
         run: npm run test
-        continue-on-error: true
 
   # Frontend Tests & Build
   frontend-test:
@@ -95,7 +93,6 @@ jobs:
       - name: Lint frontend
         working-directory: frontend
         run: npm run lint
-        continue-on-error: true
       
       - name: Build frontend
         working-directory: frontend
@@ -108,7 +105,6 @@ jobs:
       - name: Run frontend tests
         working-directory: frontend
         run: npm run test -- --coverage --watchAll=false
-        continue-on-error: true
       
       - name: Upload coverage
         uses: codecov/codecov-action@v3

@@ -15,6 +15,8 @@ import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import TransactionHistoryPage from './pages/TransactionHistoryPage';
+import TransactionReceiptPage from './pages/TransactionReceiptPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Components
@@ -97,6 +99,24 @@ function App() {
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                   <PaymentPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <TransactionHistoryPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/transactions/:id"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <TransactionReceiptPage />
                 </ProtectedRoute>
               }
             />
