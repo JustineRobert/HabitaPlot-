@@ -81,4 +81,34 @@ router.get(
   paymentController.getTransactionById
 );
 
+/**
+ * GET /payments/export
+ * Export all user transactions in CSV or JSON format
+ */
+router.get(
+  '/export',
+  [
+    authMiddleware,
+    query('format').optional().isIn(['csv', 'json']).withMessage('Format must be csv or json'),
+    query('startDate').optional().isISO8601().withMessage('Start date must be a valid ISO8601 date'),
+    query('endDate').optional().isISO8601().withMessage('End date must be a valid ISO8601 date'),
+    validateRequest
+  ],
+  paymentController.exportTransactionsCSV
+);
+
+/**
+ * GET /payments/transactions/:id/download
+ * Download a transaction receipt as HTML file
+ */
+router.get(
+  '/transactions/:id/download',
+  [
+    authMiddleware,
+    param('id').isUUID().withMessage('Transaction ID must be a valid UUID'),
+    validateRequest
+  ],
+  paymentController.downloadTransactionReceipt
+);
+
 module.exports = router;

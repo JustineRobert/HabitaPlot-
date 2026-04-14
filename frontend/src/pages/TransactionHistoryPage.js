@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiDownload } from 'react-icons/fi';
 import { paymentService } from '../services/paymentService';
+import { exportTransactionsToCSV } from '../utils/exportUtils';
 import toast from 'react-hot-toast';
 
 const TransactionHistoryPage = () => {
@@ -24,6 +26,21 @@ const TransactionHistoryPage = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    try {
+      if (transactions.length === 0) {
+        toast.error('No transactions to export');
+        return;
+      }
+      const filename = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      exportTransactionsToCSV(transactions, filename);
+      toast.success('Transactions exported successfully');
+    } catch (error) {
+      console.error('Export failed', error);
+      toast.error('Failed to export transactions');
+    }
+  };
+
   useEffect(() => {
     loadTransactions();
   }, []);
@@ -36,11 +53,20 @@ const TransactionHistoryPage = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow overflow-hidden">
-        <div className="px-6 py-4 border-b bg-gray-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-b bg-gray-50 flex flex-col gap-3 items-start justify-between sm:flex-row sm:items-center">
           <span className="font-semibold text-gray-900">Recent Transactions</span>
-          <Link to="/dashboard" className="text-sm text-blue-600 hover:underline">
-            Back to Dashboard
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleExportCSV}
+              disabled={transactions.length === 0}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            >
+              <FiDownload /> Export CSV
+            </button>
+            <Link to="/dashboard" className="text-sm text-blue-600 hover:underline py-2">
+              Back to Dashboard
+            </Link>
+          </div>
         </div>
 
         {loading ? (

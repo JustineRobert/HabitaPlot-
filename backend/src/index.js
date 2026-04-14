@@ -19,6 +19,10 @@ const Transaction = require('./models/Transaction');
 const authRoutes = require('./routes/authRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const forecastRoutes = require('./routes/forecastRoutes');
+const whatsappRoutes = require('./routes/whatsappRoutes');
+const branchRoutes = require('./routes/branchRoutes');
 
 // Initialize Express app
 const app = express();
@@ -55,6 +59,9 @@ app.get('/api/v1', (req, res) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/listings', listingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/forecasts', forecastRoutes);
+app.use('/api/v1/whatsapp', whatsappRoutes);
 // app.use('/api/v1/users', require('./routes/userRoutes'));
 // app.use('/api/v1/messages', require('./routes/messageRoutes'));
 // app.use('/api/v1/subscriptions', require('./routes/subscriptionRoutes'));
